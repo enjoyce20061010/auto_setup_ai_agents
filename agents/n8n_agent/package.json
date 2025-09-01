@@ -1,0 +1,15 @@
+{
+  "name": "n8n-agent-runner",
+  "version": "1.0.0",
+  "description": "A dedicated runner for the n8n agent, with its own environment.",
+  "main": "index.js",
+  "scripts": {
+    "start": "dotenv n8n",
+    "setup": "node setup.js"
+  },
+  "dependencies": {
+    "n8n": "^1.0.0",
+    "dotenv-cli": "^7.3.0",
+    "inquirer": "^8.2.4"
+  }
+}

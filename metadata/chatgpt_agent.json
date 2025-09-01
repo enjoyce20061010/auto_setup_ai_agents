@@ -1,0 +1,6 @@
+{
+    "name": "chatgpt-agent",
+    "version": "1.0.0",
+    "description": "A ChatGPT agent.",
+    "main": "chatgpt_agent.py"
+}

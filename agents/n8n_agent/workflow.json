@@ -1,0 +1,16 @@
+{
+    "name": "My workflow",
+    "nodes": [
+        {
+            "parameters": {},
+            "name": "When chat message received",
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                -300,
+                -40
+            ]
+        }
+    ],
+    "connections": {}
+}

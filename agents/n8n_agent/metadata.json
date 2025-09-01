@@ -1,0 +1,6 @@
+{
+    "name": "n8n-agent",
+    "version": "1.0.0",
+    "description": "An n8n agent workflow.",
+    "main": "workflow.json"
+}

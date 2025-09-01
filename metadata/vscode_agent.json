@@ -1,0 +1,6 @@
+{
+    "name": "vscode-agent",
+    "version": "1.0.0",
+    "description": "A VS Code agent.",
+    "main": "agent.js"
+}
