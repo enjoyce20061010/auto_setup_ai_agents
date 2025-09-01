@@ -29,6 +29,65 @@ fail() {
     exit 1
 }
 
+# --- Pre-flight check for curl-based execution ---
+# This block ensures that if the script is run via curl, it first
+# downloads the full repository, unpacks it, and then opens a new
+# terminal window to run the interactive installer, solving all shell conflicts.
+pre_flight_check() {
+    # Heuristic to check if we are running from a file or a pipe.
+    # If the script's name is not 'install_ai_agent.sh' (e.g., 'bash'),
+    # we assume it's piped from curl and needs to download the full project.
+    if [ "$(basename "$0")" != "install_ai_agent.sh" ]; then
+        info "Running via curl. Preparing to download the full project..."
+
+        # Check for required tools
+        if ! command -v curl &> /dev/null; then
+            fail "curl is not installed. Please install curl to continue."
+        fi
+        if ! command -v tar &> /dev/null; then
+            fail "tar is not installed. Please install tar to continue."
+        fi
+        if ! command -v osascript &> /dev/null; then
+            fail "osascript (AppleScript) is not available. This installer requires it on macOS."
+        fi
+
+        local REPO_OWNER="enjoyce20061010"
+        local REPO_NAME="auto_setup_ai_agents"
+        local TARBALL_URL="https://github.com/${REPO_OWNER}/${REPO_NAME}/archive/refs/heads/main.tar.gz"
+        local INSTALL_DIR="$HOME/${REPO_NAME}"
+        local TEMP_TARBALL="/tmp/${REPO_NAME}.tar.gz"
+
+        # For a curl-based install, always start fresh.
+        if [ -d "$INSTALL_DIR" ]; then
+            info "Removing existing installation directory at $INSTALL_DIR..."
+            rm -rf "$INSTALL_DIR" || fail "Could not remove existing directory. Please check permissions."
+        fi
+
+        info "Downloading project from ${TARBALL_URL}..."
+        if ! curl -L "$TARBALL_URL" -o "$TEMP_TARBALL"; then
+            fail "Failed to download the project tarball. Please check the URL and your connection."
+        fi
+
+        info "Unpacking project into $INSTALL_DIR..."
+        mkdir -p "$INSTALL_DIR" || fail "Could not create installation directory."
+        if ! tar -xzf "$TEMP_TARBALL" -C "$INSTALL_DIR" --strip-components=1; then
+            fail "Failed to unpack the project tarball."
+        fi
+        rm "$TEMP_TARBALL"
+
+        info "Download complete. Opening a new terminal window to start the installation..."
+
+        # Use osascript to open a new Terminal window and run the installer.
+        # This is the most robust way to create a new, interactive session
+        # and avoid all shell conflicts (zsh vs bash) from the curl pipe.
+        osascript -e "tell application \"Terminal\" to do script \"cd '${INSTALL_DIR}' && ./install_ai_agent.sh\""
+        
+        # The curl | bash script has done its job (downloading). Now it must exit.
+        success "A new terminal window has been opened to continue the installation. Please check your open windows."
+        exit 0
+    fi
+}
+
 # --- Agent Installation Functions ---
 
 # 1. VSCode Agent
@@ -204,5 +263,6 @@ main_menu() {
 }
 
 # --- Script Entry Point ---
+pre_flight_check
 main_menu
 info "Installation script finished."
