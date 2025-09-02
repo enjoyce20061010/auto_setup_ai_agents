@@ -39,6 +39,12 @@ install_vscode_agent() {
 install_n8n_agent() {
     info "安裝 n8n Agent..."
     cd agents/n8n_agent
+    
+    # 先啟動n8n生成配置和密鑰
+    info "首次啟動n8n以生成配置文件和加密密鑰..."
+    npx n8n start --tunnel & sleep 30
+    kill $!
+    
     npm install
     node setup.js
     success "n8n Agent 安裝完成。"
