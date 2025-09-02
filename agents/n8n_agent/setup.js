@@ -1,95 +1,57 @@
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
-const inquirer = require('inquirer');
+const readline = require('readline');
+
+const envPath = path.join(__dirname, '.env');
+const configPath = path.join(process.env.HOME, '.n8n', 'config');
+
+function ask(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  return new Promise(resolve => rl.question(question, ans => {
+    rl.close();
+    resolve(ans);
+  }));
+}
 
 async function main() {
-  console.log('--- n8n Agent Setup ---');
-
-  const n8nConfigPath = path.join(os.homedir(), '.n8n', 'config');
-  let envContent = '# n8n Environment Configuration\n';
-
-  if (fs.existsSync(n8nConfigPath)) {
-    try {
-      const n8nConfig = JSON.parse(fs.readFileSync(n8nConfigPath, 'utf8'));
-      if (n8nConfig.encryptionKey) {
-        envContent += `N8N_ENCRYPTION_KEY=${n8nConfig.encryptionKey}\n`;
-        console.log('🔑 Found existing N8N_ENCRYPTION_KEY in ~/.n8n/config and saved it to .env file.');
-      } else {
-        console.error('🛑 Error: encryptionKey not found in ~/.n8n/config.');
-        console.log('Please ensure your n8n instance has been run at least once to generate a key.');
-        return;
-      }
-    } catch (error) {
-      console.error(`🛑 Error reading or parsing ~/.n8n/config: ${error.message}`);
-      return;
+  let encryptionKey = '';
+  if (fs.existsSync(configPath)) {
+    const config = fs.readFileSync(configPath, 'utf8');
+    const match = config.match(/N8N_ENCRYPTION_KEY=(.+)/);
+    if (match) {
+      encryptionKey = match[1];
+      console.log('已從 ~/.n8n/config 讀取 N8N_ENCRYPTION_KEY');
     }
-  } else {
-    console.error('🛑 Error: n8n config file not found at ~/.n8n/config.');
-    console.log('Please run n8n at least once to generate the necessary configuration and encryption key before running this setup.');
-    return;
   }
-
-  const { useAdvancedSetup } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'useAdvancedSetup',
-      message: 'Do you want to configure advanced settings (like a database) now?',
-      default: false,
-    },
-  ]);
-
-  if (useAdvancedSetup) {
-    const { dbType } = await inquirer.prompt([{
-        type: 'list',
-        name: 'dbType',
-        message: 'Which database do you want to use?',
-        choices: ['None (use default SQLite)', 'PostgreSQL', 'MySQL'],
-    }]);
-
-    if (dbType !== 'None (use default SQLite)') {
-        const dbQuestions = [
-            { type: 'input', name: 'host', message: 'Database Host:', default: 'localhost' },
-            { type: 'input', name: 'port', message: 'Database Port:', default: dbType === 'PostgreSQL' ? 5432 : 3306 },
-            { type: 'input', name: 'database', message: 'Database Name:' },
-            { type: 'input', name: 'user', message: 'Database User:' },
-            { type: 'password', name: 'password', message: 'Database Password:', mask: '*' },
-        ];
-        const dbAnswers = await inquirer.prompt(dbQuestions);
-        const dbPrefix = dbType === 'PostgreSQL' ? 'DB_POSTGRESDB' : 'DB_MYSQL';
-        envContent += `DB_TYPE=${dbType.toLowerCase()}db\n`;
-        envContent += `${dbPrefix}_HOST=${dbAnswers.host}\n`;
-        envContent += `${dbPrefix}_PORT=${dbAnswers.port}\n`;
-        envContent += `${dbPrefix}_DATABASE=${dbAnswers.database}\n`;
-        envContent += `${dbPrefix}_USER=${dbAnswers.user}\n`;
-        envContent += `${dbPrefix}_PASSWORD=${dbAnswers.password}\n`;
+  if (!encryptionKey) {
+    encryptionKey = await ask('請輸入 N8N_ENCRYPTION_KEY（可留空自動生成）: ');
+    if (!encryptionKey) {
+      encryptionKey = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      console.log('已自動生成 N8N_ENCRYPTION_KEY: ' + encryptionKey);
     }
   }
 
-  const { addApiKeys } = await inquirer.prompt([{
-      type: 'confirm',
-      name: 'addApiKeys',
-      message: 'Do you want to add any API keys (e.g., OPENAI_API_KEY) as environment variables now?',
-      default: false,
-  }]);
-
-  if (addApiKeys) {
-      const { apiKeysStr } = await inquirer.prompt([{
-          type: 'input',
-          name: 'apiKeysStr',
-          message: 'Enter your keys in KEY=VALUE format, separated by commas (e.g., OPENAI_API_KEY=sk-..., ANOTHER_KEY=...):'
-      }]);
-      const pairs = apiKeysStr.split(',');
-      pairs.forEach(pair => {
-          if(pair.includes('=')) {
-              envContent += `${pair.trim()}\n`;
-          }
-      });
+  let dbType = await ask('是否需要進階資料庫設定？輸入資料庫類型（留空跳過）: ');
+  let dbConfig = '';
+  if (dbType) {
+    dbConfig = await ask('請輸入資料庫連線字串: ');
   }
 
-  fs.writeFileSync('.env', envContent);
-  console.log('✅ n8n configuration saved successfully to .env file.');
-  console.log('You can now start the agent by running: npm start');
+  let apiKey = await ask('請輸入 n8n API 金鑰（留空跳過）: ');
+
+  let envContent = `N8N_ENCRYPTION_KEY=${encryptionKey}\n`;
+  if (dbType && dbConfig) {
+    envContent += `DB_TYPE=${dbType}\nDB_CONNECTION=${dbConfig}\n`;
+  }
+  if (apiKey) {
+    envContent += `N8N_API_KEY=${apiKey}\n`;
+  }
+
+  fs.writeFileSync(envPath, envContent);
+  console.log('.env 檔案已寫入完成。');
 }
 
 main();
