@@ -14,4 +14,8 @@ EXTRACTED_DIR_NAME="$REPO-fix-n8n-and-chatgpt-setup"
 
 # 进入项目目录并执行安装脚本
 cd "$EXTRACTED_DIR_NAME"
+
+# Add execute permission to the installer script
+chmod +x install_ai_agent.sh
+
 ./install_ai_agent.sh curl
