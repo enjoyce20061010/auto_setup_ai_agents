@@ -143,6 +143,9 @@ install_n8n_agent() {
     info "Changing to $AGENT_DIR directory..."
     cd "$AGENT_DIR" || fail "Could not change to directory $AGENT_DIR"
 
+    info "Cleaning up any previous installations to ensure a fresh start..."
+    rm -rf node_modules package-lock.json
+
     info "Installing Node.js dependencies (including n8n itself)..."
     if ! npm install; then
         fail "npm install failed. Please check for errors."
@@ -198,18 +201,11 @@ install_chatgpt_agent() {
     info "Installing dependencies from requirements.txt..."
     source "$VENV_DIR/bin/activate"
     pip3 install -r "$AGENT_DIR/requirements.txt"
+
+    # Run the setup script to configure the API key
+    python3 "$AGENT_DIR/setup.py"
+
     deactivate
-
-    # Prompt for API Key
-    read -p "Please enter your OpenAI API Key: " OPENAI_API_KEY
-    if [ -z "$OPENAI_API_KEY" ]; then
-        fail "OpenAI API Key cannot be empty. Installation cancelled."
-    fi
-
-    # Replace placeholder in the script
-    # Note: Using a temporary file for sed to work on both macOS and Linux
-    sed -i.bak "s/YOUR_OPENAI_API_KEY/$OPENAI_API_KEY/g" "$AGENT_DIR/chatgpt_agent.py"
-    rm "$AGENT_DIR/chatgpt_agent.py.bak"
 
     success "ChatGPT Agent installed successfully!"
     info "To run the agent, use the following commands:"

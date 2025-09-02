@@ -1,25 +1,43 @@
 const fs = require('fs');
+const path = require('path');
+const os = require('os');
 const inquirer = require('inquirer');
-const crypto = require('crypto');
 
 async function main() {
   console.log('--- n8n Agent Setup ---');
+
+  const n8nConfigPath = path.join(os.homedir(), '.n8n', 'config');
+  let envContent = '# n8n Environment Configuration\n';
+
+  if (fs.existsSync(n8nConfigPath)) {
+    try {
+      const n8nConfig = JSON.parse(fs.readFileSync(n8nConfigPath, 'utf8'));
+      if (n8nConfig.encryptionKey) {
+        envContent += `N8N_ENCRYPTION_KEY=${n8nConfig.encryptionKey}\n`;
+        console.log('🔑 Found existing N8N_ENCRYPTION_KEY in ~/.n8n/config and saved it to .env file.');
+      } else {
+        console.error('🛑 Error: encryptionKey not found in ~/.n8n/config.');
+        console.log('Please ensure your n8n instance has been run at least once to generate a key.');
+        return;
+      }
+    } catch (error) {
+      console.error(`🛑 Error reading or parsing ~/.n8n/config: ${error.message}`);
+      return;
+    }
+  } else {
+    console.error('🛑 Error: n8n config file not found at ~/.n8n/config.');
+    console.log('Please run n8n at least once to generate the necessary configuration and encryption key before running this setup.');
+    return;
+  }
 
   const { useAdvancedSetup } = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'useAdvancedSetup',
-      message: 'Do you want to configure advanced settings (like a database) now? If not, a default setup will be used.',
+      message: 'Do you want to configure advanced settings (like a database) now?',
       default: false,
     },
   ]);
-
-  let envContent = '# n8n Environment Configuration\n';
-
-  // Always generate and set an encryption key
-  const encryptionKey = crypto.randomBytes(32).toString('hex');
-  envContent += `N8N_ENCRYPTION_KEY=${encryptionKey}\n`;
-  console.log('🔑 Generated and saved a new N8N_ENCRYPTION_KEY for credential security.');
 
   if (useAdvancedSetup) {
     const { dbType } = await inquirer.prompt([{
