@@ -99,17 +99,12 @@ install_n8n_agent() {
     info "Changing to $AGENT_DIR directory..."
     cd "$AGENT_DIR" || fail "Could not change to directory $AGENT_DIR"
     
-    # Start n8n to generate config and keys
-    info "Starting n8n for the first time to generate configuration and encryption keys..."
-    # Run in background, wait, then kill.
-    npx n8n start --tunnel &
-    N8N_PID=$!
-    info "Waiting for 30 seconds for n8n to initialize... (PID: $N8N_PID)"
-    sleep 30
-    kill $N8N_PID
-    info "n8n has been stopped."
+    info "Installing n8n as a dependency..."
+    if ! npm install n8n@1.109.1; then
+        fail "npm install n8n failed. Please check for errors."
+    fi
 
-    info "Installing Node.js dependencies..."
+    info "Installing other Node.js dependencies..."
     if ! npm install; then
         fail "npm install failed. Please check for errors."
     fi
@@ -120,6 +115,9 @@ install_n8n_agent() {
     fi
     
     success "n8n Agent installed successfully."
+    info "Starting the n8n server with a tunnel..."
+    info "You will see the URL for your n8n instance in the output below."
+    npx n8n start --tunnel
     info "Returning to the root directory..."
     cd ../..
 }
