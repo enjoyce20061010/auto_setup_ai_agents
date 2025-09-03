@@ -113,6 +113,22 @@ install_n8n_agent() {
     if ! node setup.js; then
         fail "Agent setup failed. Please check for errors."
     fi
+
+    info "Copying default workflow..."
+    SOURCE_WORKFLOW_FILE="workflow.json"
+    DEST_WORKFLOWS_DIR="$HOME/.n8n/workflows"
+
+    if [ ! -d "$DEST_WORKFLOWS_DIR" ]; then
+        info "Creating n8n workflows directory at $DEST_WORKFLOWS_DIR..."
+        mkdir -p "$DEST_WORKFLOWS_DIR" || fail "Could not create directory $DEST_WORKFLOWS_DIR"
+    fi
+
+    if [ -f "$SOURCE_WORKFLOW_FILE" ]; then
+        info "Copying $SOURCE_WORKFLOW_FILE to $DEST_WORKFLOWS_DIR..."
+        cp "$SOURCE_WORKFLOW_FILE" "$DEST_WORKFLOWS_DIR/" || warn "Could not copy workflow file."
+    else
+        warn "Default workflow file ($SOURCE_WORKFLOW_FILE) not found. Skipping copy."
+    fi
     
     success "n8n Agent installed successfully."
     info "Starting the n8n server with a tunnel..."
