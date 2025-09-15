@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "啟動根因分析Agent",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/root_cause_agent.py",
+      "args": [
+        "--interactive"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Agent",
+        "order": 1
+      }
+    },
+    {
+      "name": "運行Agent演示",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/root_cause_agent.py",
+      "args": [
+        "demo"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Agent",
+        "order": 2
+      }
+    }
+  ]
+}

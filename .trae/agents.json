@@ -1,0 +1,31 @@
+{
+  "agents": [
+    {
+      "id": "root_cause_agent",
+      "name": "根因分析專家",
+      "description": "專業的系統問題診斷和根本原因分析工具，支持多維度問題分析",
+      "icon": "🔍",
+      "type": "python",
+      "command": "python3",
+      "args": ["root_cause_agent.py"],
+      "cwd": "/Users/jianjunneng/0912test/auto_setup_ai_agents",
+      "capabilities": [
+        "系統故障診斷",
+        "性能問題分析", 
+        "架構問題排查",
+        "根本原因定位"
+      ],
+      "activation": {
+        "keywords": ["故障", "問題", "分析", "診斷"],
+        "file_patterns": ["*.json", "*.log", "*.txt"]
+      },
+      "settings": {
+        "interactive": true,
+        "auto_save": true,
+        "output_format": "rich"
+      }
+    }
+  ],
+  "version": "1.0.0",
+  "schema_version": "2024.1"
+}

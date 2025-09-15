@@ -1,0 +1,25 @@
+{
+  "trae.customAgents": [
+    {
+      "id": "root_cause_agent",
+      "name": "根因分析專家",
+      "description": "專業的系統問題診斷和根本原因分析工具",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/root_cause_agent.py"
+      ],
+      "icon": "🔍",
+      "when": "resourceExtname == .py || resourceExtname == .log",
+      "category": "分析工具",
+      "prompt": "請描述您遇到的問題，我將為您進行根因分析"
+    }
+  ],
+  "trae.agentShortcuts": [
+    {
+      "key": "ctrl+shift+r",
+      "command": "trae.runAgent",
+      "args": "root_cause_agent",
+      "when": "editorTextFocus"
+    }
+  ]
+}

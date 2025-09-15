@@ -1,0 +1,13 @@
+[
+  {
+    "key": "ctrl+shift+a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🔄 切換到根因分析Agent",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "📊 運行演示"
+  }
+]

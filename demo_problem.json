@@ -1,0 +1,21 @@
+{
+  "title": "網站訪問緩慢問題",
+  "description": "用戶反映網站加載時間超過10秒，影響用戶體驗和業務轉化",
+  "symptoms": [
+    "頁面加載時間超過10秒",
+    "用戶跳出率增加50%",
+    "客服投訴量增加3倍",
+    "轉化率下降30%"
+  ],
+  "environment": {
+    "server_type": "雲服務器",
+    "peak_hours": true,
+    "recent_changes": "數據庫架構調整",
+    "user_traffic": "10000+ daily",
+    "server_load": "85%",
+    "database_size": "50GB",
+    "last_optimization": "3個月前"
+  },
+  "category": "performance",
+  "urgency": "high"
+}

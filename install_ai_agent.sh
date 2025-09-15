@@ -171,6 +171,14 @@ install_n8n_agent() {
     info "To run the agent, use the following commands:"
     echo "  cd $AGENT_DIR"
     echo "  npm start"
+    echo ""
+    info "⚠️  重要：workflow需要手動匯入！"
+    info "workflow.json已準備好在：$AGENT_DIR/workflow.json"
+    info "匯入步驟："
+    echo "  1. 開啟 http://localhost:5678"
+    echo "  2. 點擊左側選單 'Workflows' → 'Import'"
+    echo "  3. 選擇檔案：$AGENT_DIR/workflow.json"
+    echo "  4. 詳細指引請查看：N8N_WORKFLOW_IMPORT_GUIDE.md"
 }
 
 # 3. ChatGPT Agent

@@ -1,0 +1,32 @@
+{
+  "contributes": {
+    "commands": [
+      {
+        "command": "trae.runRootCauseAgent",
+        "title": "運行根因分析Agent",
+        "category": "Trae Agent"
+      },
+      {
+        "command": "trae.runAgentDemo",
+        "title": "運行Agent演示",
+        "category": "Trae Agent"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "trae.runRootCauseAgent",
+          "when": "resourceExtname == .py || resourceExtname == .log",
+          "group": "Agent"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "trae.runRootCauseAgent",
+          "when": "editorTextFocus",
+          "group": "Agent"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "root_cause_agent",
+  "name": "根因分析專家",
+  "version": "1.0.0",
+  "description": "專業的系統問題診斷和根本原因分析工具",
+  "type": "external",
+  "runtime": {
+    "type": "python",
+    "command": "python3",
+    "args": [
+      "root_cause_agent.py"
+    ],
+    "env": {
+      "PYTHONPATH": "/Users/jianjunneng/0912test/auto_setup_ai_agents"
+    }
+  },
+  "capabilities": {
+    "analysis": {
+      "types": [
+        "system_issues",
+        "performance",
+        "architecture"
+      ],
+      "formats": [
+        "json",
+        "text",
+        "interactive"
+      ]
+    },
+    "diagnostics": {
+      "scope": [
+        "system",
+        "application",
+        "infrastructure"
+      ],
+      "depth": "comprehensive"
+    }
+  },
+  "interaction": {
+    "modes": [
+      "cli",
+      "file",
+      "interactive"
+    ],
+    "input_types": [
+      "problem_description",
+      "log_files",
+      "metrics"
+    ],
+    "output_types": [
+      "report",
+      "suggestions",
+      "action_items"
+    ]
+  },
+  "activation": {
+    "manual_trigger": true,
+    "auto_trigger": false,
+    "context_menu": true,
+    "keyboard_shortcut": "Ctrl+Shift+A"
+  }
+}
